@@ -2,7 +2,7 @@
 Santa: Present delivery
 
 ## Credits:
-Code:       Cathryn Dunicliff - meowterspace
-Grahpics:   Sean Adams
-            Paul Moughtin-Leay
-Superviser: Jamie Hamslam
+###### Code:       Cathryn Dunicliff - meowterspace ######
+###### Grahpics:   Sean Adams ######
+######             Paul Moughtin-Leay ######
+###### Superviser: Jamie Hamslam ######
