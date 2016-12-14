@@ -2,7 +2,7 @@
 ==================================================
 Xmas Code project
 Written by Cat.
-Graphics by Paul & Sean. 
+Graphics by Paul, Ryan & Sean.
 Team supervisor - Jamie
 ==================================================
 CHANGE LOG
@@ -42,28 +42,28 @@ FLOORW = pygame.image.load('images/tilewhite.png')
 SIDE = pygame.image.load('images/tilewall.png')
 GOAL = pygame.image.load('images/goal.png')
 # BLACK = pygame.image.load('images/black.png')
-player = [pygame.image.load('images/santa.png'),
-          pygame.image.load('images/astro2.png'),
-          pygame.image.load('images/astro3.png'),
-          pygame.image.load('images/astro4.png'),
-          pygame.image.load('images/astro5.png'),
-          pygame.image.load('images/astro6.png'), ]
+player = [pygame.image.load('images/santa.png'),]
 display = (TILE_COLUMNS * MAP_WIDTH, TILE_ROWS * MAP_HEIGHT)
 fog_of_war = pygame.Surface(display)
 
 TILEMAP = [
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 4, 4, 4, 4, 4, 4, 4, 4, 0,
-    0, 1, 2, 1, 2, 1, 2, 1, 2, 0,
-    0, 2, 1, 2, 1, 3, 3, 2, 1, 0,
-    0, 1, 2, 1, 2, 3, 3, 1, 2, 0,
-    0, 2, 1, 2, 1, 2, 1, 2, 1, 0,
-    0, 1, 2, 1, 2, 1, 2, 1, 2, 0,
-    0, 2, 1, 2, 1, 2, 1, 2, 1, 0,
+    0, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+    0, 1, 2, 1, 2, 1, 2, 1, 2, 2,
+    0, 2, 1, 2, 1, 3, 3, 2, 1, 5,
+    0, 1, 2, 1, 2, 3, 3, 1, 2, 6,
+    0, 2, 1, 2, 1, 2, 1, 2, 1, 7,
+    0, 1, 2, 1, 2, 1, 2, 1, 2, 8,
+    0, 2, 1, 2, 1, 2, 1, 2, 1, 2,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    4, 4, 4, 4, 4, 4, 4, 4, 4, 4
+    4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
 
 ]
+
+HOUSES = [pygame.image.load('images/house1.png'),
+          pygame.image.load('images/house2.png'),
+          pygame.image.load('images/house3.png'),
+          pygame.image.load('images/house4.png')]
 
 PRESENTS = [pygame.image.load('images/presentg.png'),
             pygame.image.load('images/present1.png'),
@@ -73,7 +73,7 @@ PRESENTS = [pygame.image.load('images/presentg.png'),
 
 PRESPOS = []
 
-
+inventory = []
 # =======================================================================================================================
 # FUNCTIONS
 # =======================================================================================================================
@@ -89,7 +89,7 @@ def readRoomsfile(filename):
 def draw_map(screen):
     for index, tile in enumerate(TILEMAP):
         idy = int(floor(index / 10) * 45)
-        idx = int((index % 10) * 45)
+        idx = int((index % 10) * 45)   # TODO changed
         if tile == 0:
             screen.blit(TOP, (idx, idy))
         elif tile == 1:
@@ -101,7 +101,13 @@ def draw_map(screen):
         elif tile == 4:
             screen.blit(SIDE, (idx, idy))
         elif tile == 5:
-            screen.blit(BLACK, (idx, idy))
+            screen.blit(HOUSES[0], (idx, idy))
+        elif tile == 6:
+            screen.blit(HOUSES[1], (idx, idy))
+        elif tile == 7:
+            screen.blit(HOUSES[2], (idx, idy))
+        elif tile == 8:
+            screen.blit(HOUSES[3], (idx, idy))
         else:
             print "No known tiles found"
 
@@ -129,7 +135,6 @@ def move(start_x, start_y, x, y):  # 25, 25
     if check_block(end_x, end_y) == -1:
         return (end_x, end_y)
     elif check_block(end_x, end_y) >= 0:
-        print "YAY"
         present(check_block(end_x, end_y))
         return (end_x, end_y)
     else:
@@ -140,6 +145,9 @@ def move(start_x, start_y, x, y):  # 25, 25
 
 def present(index):
     PRESPOS.pop(index)
+    # TODO display item
+    inventory.append(index)
+    print "inventory"+str(inventory)
     print PRESPOS
 
 
@@ -171,6 +179,10 @@ def main():
         PRESPOS.append([bx, by])
     print PRESPOS
     while True:
+
+        if len(inventory) >= 1:
+            screen.blit(PRESENTS[1], (450, 0)) # TODO blit presents top right
+
         clock.tick(30)
         draw_map(screen)
         for index, item in enumerate(PRESPOS):
@@ -178,7 +190,6 @@ def main():
         # pygame.draw.rect(fog_of_war, (60, 60, 60), (playerx,playery+45,50,50))
         # fog_of_war.set_colorkey((60, 60, 60))
 
-        inventory = []
         # print inventory
 
         for event in pygame.event.get():
@@ -191,13 +202,15 @@ def main():
                 if event.key == K_ESCAPE:
                     sys.exit(0)
                 elif event.key == K_LEFT:
-                    current_x, current_y = move(current_x, current_y, -45,
-                                                0)  # LEFT = (-45,0)  RIGHT = (45, 0)  UP = (0,-45)  DOWN=(0, 45)
+                    current_x, current_y = move(current_x, current_y, -45, 0)  # LEFT = (-45,0)  RIGHT = (45, 0)  UP = (0,-45)  DOWN=(0, 45)
 
                     update(player[0], current_x, current_y, screen)
                     player_positions[0] = [current_x, current_y]
                 elif event.key == K_RIGHT:
                     current_x, current_y = move(current_x, current_y, 45, 0)
+
+                    update(player[0], current_x, current_y, screen)
+                    player_positions[0] = [current_x, current_y]
                 elif event.key == K_UP:
 
                     update(player[0], current_x, current_y, screen)
