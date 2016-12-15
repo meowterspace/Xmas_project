@@ -50,10 +50,10 @@ TILEMAP = [
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 4, 4, 4, 4, 4, 4, 4, 4, 4,
     0, 1, 2, 1, 2, 1, 2, 1, 2, 2,
-    0, 2, 1, 2, 1, 3, 3, 2, 1, 5,
-    0, 1, 2, 1, 2, 3, 3, 1, 2, 6,
-    0, 2, 1, 2, 1, 2, 1, 2, 1, 7,
-    0, 1, 2, 1, 2, 1, 2, 1, 2, 8,
+    0, 2, 1, 2, 1, 3, 3, 2, 5, 9,
+    0, 1, 2, 1, 2, 3, 3, 1, 6, 10,
+    0, 2, 1, 2, 1, 2, 1, 2, 7, 0,
+    0, 1, 2, 1, 2, 1, 2, 1, 8, 0,
     0, 2, 1, 2, 1, 2, 1, 2, 1, 2,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
@@ -64,6 +64,9 @@ HOUSES = [pygame.image.load('images/house1.png'),
           pygame.image.load('images/house2.png'),
           pygame.image.load('images/house3.png'),
           pygame.image.load('images/house4.png')]
+
+PEOPLE = [pygame.image.load('images/santadoggo.png'),
+          pygame.image.load('images/billy.png')]
 
 PRESENTS = [pygame.image.load('images/presentg.png'),
             pygame.image.load('images/present1.png'),
@@ -108,6 +111,10 @@ def draw_map(screen):
             screen.blit(HOUSES[2], (idx, idy))
         elif tile == 8:
             screen.blit(HOUSES[3], (idx, idy))
+        elif tile == 9:
+            screen.blit(PEOPLE[0], (idx, idy))
+        elif tile == 10:
+            screen.blit(PEOPLE[1], (idx, idy))
         else:
             print "No known tiles found"
 
@@ -124,6 +131,10 @@ def check_block(x, y):
             print "PRESENT: " + str(i)
     if check_index != 0:
         return -1  # True
+    elif check_index == 5: return -5
+    elif check_index == 6: return -6
+    elif check_index == 7: return -7
+    elif check_index == 8: return -8
     else:
         print ("Move invalid")
         return -2  # False
@@ -137,6 +148,13 @@ def move(start_x, start_y, x, y):  # 25, 25
     elif check_block(end_x, end_y) >= 0:
         present(check_block(end_x, end_y))
         return (end_x, end_y)
+    elif check_block(end_x, end_y) == -5: # TODO fix...
+        inventory.pop(0)
+        print "delivered to house "
+        return (end_x, end_y)
+    #elif check_block(end_x, end_y) >= 0:
+    #elif check_block(end_x, end_y) >= 0:
+    #elif check_block(end_x, end_y) >= 0:
     else:
         return (start_x, start_y)
         # DISPLAYSURF.blit(player, (playerx, playery))
@@ -169,6 +187,7 @@ def update(player, x, y, screen):
 
 def main():
     screen = init()
+    FONT = pygame.font.SysFont("monospace", 15)
     clock = pygame.time.Clock()
 
     for index, item in enumerate(PRESENTS):
@@ -180,13 +199,16 @@ def main():
     print PRESPOS
     while True:
 
-        if len(inventory) >= 1:
-            screen.blit(PRESENTS[1], (450, 0)) # TODO blit presents top right
 
         clock.tick(30)
         draw_map(screen)
         for index, item in enumerate(PRESPOS):
             screen.blit(PRESENTS[index], (PRESPOS[index][0], PRESPOS[index][1]))
+        label = FONT.render("Inventory:", 1, (0,0,0))
+        screen.blit(label, (315, 20))
+        if len(inventory) > 0:
+            #screen.blit(PRESENTS[1], (450, 0)) # TODO blit presents top right
+            screen.blit(PRESENTS[1], (405, 20))
         # pygame.draw.rect(fog_of_war, (60, 60, 60), (playerx,playery+45,50,50))
         # fog_of_war.set_colorkey((60, 60, 60))
 
